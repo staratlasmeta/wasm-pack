@@ -13,12 +13,14 @@ use crate::wasm_opt;
 use crate::PBAR;
 use anyhow::{anyhow, bail, Error, Result};
 use binary_install::{Cache, Download};
+use home::cargo_home;
 use log::info;
 use std::fmt;
 use std::path::PathBuf;
 use std::str::FromStr;
 use std::time::Instant;
 use structopt::clap::AppSettings;
+use which::Path;
 
 /// Everything required to configure and run the `wasm-pack build` command.
 #[allow(missing_docs)]
@@ -392,9 +394,14 @@ impl Build {
         //     self.mode.install_permitted(),
         // )?;
         // self.bindgen = Some(bindgen);
-        self.bindgen = Some(Status::Found(Download::at(
-            "/Users/sammyharris/.cargo/bin/".as_ref(),
-        )));
+        let cargo_path = match cargo_home() {
+            Ok(path) => Some(path),
+            Err(e) => {
+                info!("Unable to get cargo home: {}", e);
+                None
+            }
+        };
+        self.bindgen = Some(Status::Found(Download::at(Path::new(cargo_path.unwrap())?.join("bin").as_ref())));
         info!("Installing wasm-bindgen-cli was successful.");
         Ok(())
     }
