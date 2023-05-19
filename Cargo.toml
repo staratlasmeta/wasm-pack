@@ -19,9 +19,9 @@ chrono = "0.4.23"
 console = "0.15.5"
 curl = "0.4.44"
 dialoguer = "0.10.3"
+dirs = "5.0.1"
 env_logger = { version = "0.10.0", default-features = false }
 glob = "0.3.1"
-home = "0.5.5"
 human-panic = "1.0.3"
 log = "0.4.17"
 openssl = { version = '0.10.48', optional = true }
