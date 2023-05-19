@@ -38,6 +38,10 @@ toml = "0.5.11"
 walkdir = "2.3.2"
 which = "4.4.0"
 
+[patch.crates-io]
+wasm-bindgen = {path = "../wasm-bindgen"}
+#wasm-bindgen-shared = {path = "../wasm-bindgen/crates/shared"}
+
 [dev-dependencies]
 assert_cmd = "2.0.8"
 lazy_static = "1.4.0"

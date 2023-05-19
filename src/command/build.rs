@@ -5,7 +5,7 @@ use crate::build;
 use crate::cache;
 use crate::command::utils::{create_pkg_dir, get_crate_path};
 use crate::emoji;
-use crate::install::{self, InstallMode, Tool};
+use crate::install::{self, InstallMode, Status, Tool};
 use crate::license;
 use crate::lockfile::Lockfile;
 use crate::manifest;
@@ -13,7 +13,7 @@ use crate::readme;
 use crate::wasm_opt;
 use crate::PBAR;
 use anyhow::{anyhow, bail, Error, Result};
-use binary_install::Cache;
+use binary_install::{Cache, Download};
 use log::info;
 use std::fmt;
 use std::path::PathBuf;
@@ -383,16 +383,19 @@ impl Build {
 
     fn step_install_wasm_bindgen(&mut self) -> Result<()> {
         info!("Identifying wasm-bindgen dependency...");
-        let lockfile = Lockfile::new(&self.crate_data)?;
-        let bindgen_version = lockfile.require_wasm_bindgen()?;
-        info!("Installing wasm-bindgen-cli...");
-        let bindgen = install::download_prebuilt_or_cargo_install(
-            Tool::WasmBindgen,
-            &self.cache,
-            bindgen_version,
-            self.mode.install_permitted(),
-        )?;
-        self.bindgen = Some(bindgen);
+        // let lockfile = Lockfile::new(&self.crate_data)?;
+        // let bindgen_version = lockfile.require_wasm_bindgen()?;
+        // info!("Installing wasm-bindgen-cli...");
+        // let bindgen = install::download_prebuilt_or_cargo_install(
+        //     Tool::WasmBindgen,
+        //     &self.cache,
+        //     bindgen_version,
+        //     self.mode.install_permitted(),
+        // )?;
+        // self.bindgen = Some(bindgen);
+        self.bindgen = Some(Status::Found(Download::at(
+            "/Users/sammyharris/.cargo/bin/".as_ref(),
+        )));
         info!("Installing wasm-bindgen-cli was successful.");
         Ok(())
     }
@@ -416,11 +419,12 @@ impl Build {
     }
 
     fn step_run_wasm_opt(&mut self) -> Result<()> {
-        let mut args = match self
+        let args = self
             .crate_data
             .configured_profile(self.profile)
-            .wasm_opt_args()
-        {
+            .wasm_opt_args();
+        println!("Wasm-opt args: {args:#?}");
+        let mut args = match args {
             Some(args) => args,
             None => return Ok(()),
         };
