@@ -2641,7 +2641,3 @@ dependencies = [
  "libc",
  "pkg-config",
 ]
-
-[[patch.unused]]
-name = "wasm-bindgen"
-version = "0.2.86"
