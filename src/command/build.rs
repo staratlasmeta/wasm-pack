@@ -13,6 +13,7 @@ use crate::wasm_opt;
 use crate::PBAR;
 use anyhow::{anyhow, bail, Error, Result};
 use binary_install::{Cache, Download};
+use dirs::home_dir;
 use log::info;
 use std::fmt;
 use std::path::PathBuf;
@@ -392,9 +393,10 @@ impl Build {
         //     self.mode.install_permitted(),
         // )?;
         // self.bindgen = Some(bindgen);
-        self.bindgen = Some(Status::Found(Download::at(
-            "/Users/sammyharris/.cargo/bin/".as_ref(),
-        )));
+
+        let home_path = home_dir().ok_or(anyhow!("Could not find home directory."))?;
+        let bin_path = std::path::Path::new(&home_path).join(".cargo/bin");
+        self.bindgen = Some(Status::Found(Download::at(bin_path.as_ref())));
         info!("Installing wasm-bindgen-cli was successful.");
         Ok(())
     }
